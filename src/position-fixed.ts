@@ -60,7 +60,7 @@ export function restorePositionFixed(preventScrollRestoration: boolean, noBodySt
   Object.assign(document.body.style, previousBodyPosition);
 
   requestAnimationFrame(() => {
-    if (preventScrollRestoration && window.location.href !== window.location.href) return;
+    if (preventScrollRestoration) return;
     window.scrollTo(x, y);
   });
 

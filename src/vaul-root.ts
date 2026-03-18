@@ -109,6 +109,9 @@ export class VaulRoot extends LitElement {
   @state() private _activeSnapPoint: number | string | null = null;
   @state() private _activeSnapPointIndex = 0;
 
+  /** True when the caller has explicitly supplied the `open` prop (controlled mode). */
+  private _isControlled = false;
+
   // ─── Unique ID (used by the global registry) ────────────────────────────────
 
   readonly uid = `vaul-${++uidCounter}`;
@@ -146,6 +149,9 @@ export class VaulRoot extends LitElement {
     registerRoot(this);
     this._stopTrackingScroll = trackScroll();
     this._initialBackgroundColor = document.body.style.backgroundColor;
+
+    // Detect controlled mode: if 'open' attribute is present in the HTML, assume controlled.
+    this._isControlled = this.hasAttribute('open');
 
     // Uncontrolled default-open
     if (this.defaultOpen) {
@@ -919,6 +925,11 @@ export class VaulRoot extends LitElement {
 
   get activeSnapPointIndex() {
     return this._activeSnapPointIndex;
+  }
+
+  /** Public accessor for the parsed snap-points array. */
+  get snapPoints(): (number | string)[] | null {
+    return this._snapPoints;
   }
 
   get snapPointsOffset(): number[] | null {

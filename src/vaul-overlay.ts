@@ -13,7 +13,6 @@ import type { VaulRoot } from './vaul-root';
 @customElement('vaul-overlay')
 export class VaulOverlay extends LitElement {
   private _root: VaulRoot | null = null;
-  private _cleanupViewport: (() => void) | null = null;
 
   protected createRenderRoot() {
     return this;
@@ -26,16 +25,14 @@ export class VaulOverlay extends LitElement {
       this._root.registerOverlay(this);
     }
 
-    // Handle pointer-up for drag release
     this.addEventListener('pointerup', this._onPointerUp);
-    this.addEventListener('mouseup', this._onMouseUp as EventListener);
+    this.addEventListener('click', this._onClick);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener('pointerup', this._onPointerUp);
-    this.removeEventListener('mouseup', this._onMouseUp as EventListener);
-    this._cleanupViewport?.();
+    this.removeEventListener('click', this._onClick);
   }
 
   private _onPointerUp = (e: PointerEvent) => {
@@ -44,10 +41,12 @@ export class VaulOverlay extends LitElement {
     }
   };
 
-  private _onMouseUp = (e: MouseEvent) => {
-    if (this._root) {
-      // synthesise as pointer event for onRelease signature
-      this._root.onRelease(e as unknown as PointerEvent);
+  /** Clicking the overlay (without dragging) dismisses the drawer. */
+  private _onClick = (_e: MouseEvent) => {
+    const root = this._root;
+    if (!root) return;
+    if (root.dismissible && root.isOpen) {
+      root.closeDrawer();
     }
   };
 
