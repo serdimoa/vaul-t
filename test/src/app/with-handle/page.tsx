@@ -1,98 +1,56 @@
 'use client';
 
+import 'vaul';
+import { useEffect, useRef, useState } from 'react';
 import { clsx } from 'clsx';
-import { useState } from 'react';
-import { Drawer } from 'vaul';
+import '../../vaul.d';
 
 const snapPoints = ['148px', '355px'];
 
 export default function Page() {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
+  const rootRef = useRef<HTMLElement>(null);
 
-  const activeSnapPointIndex = snapPoints.indexOf(snap as string);
+  const activeSnapPointIndex = snapPoints.findIndex((s) => String(s) === String(snap));
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const handler = (e: Event) => {
+      const { snapPoint } = (e as CustomEvent<{ snapPoint: number | string | null }>).detail;
+      setSnap(snapPoint);
+    };
+    root.addEventListener('vaul-snap-point-change', handler);
+    return () => root.removeEventListener('vaul-snap-point-change', handler);
+  }, []);
 
   return (
     <div className="w-screen h-screen bg-white p-8 flex justify-center items-center">
       <div data-testid="active-snap-index">{activeSnapPointIndex}</div>
-      <Drawer.Root open snapPoints={snapPoints} activeSnapPoint={snap} setActiveSnapPoint={setSnap}>
-        <Drawer.Trigger asChild>
+      {/* @ts-ignore custom element */}
+      <vaul-root ref={rootRef} default-open snap-points={JSON.stringify(snapPoints)}>
+        {/* @ts-ignore custom element */}
+        <vaul-trigger>
           <button data-testid="trigger">Open Drawer</button>
-        </Drawer.Trigger>
-        <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-        <Drawer.Portal>
-          <Drawer.Content
+        {/* @ts-ignore custom element */}
+        </vaul-trigger>
+        {/* @ts-ignore custom element */}
+        <vaul-overlay class="fixed inset-0 bg-black/40" />
+        {/* @ts-ignore custom element */}
+        <vaul-portal>
+          {/* @ts-ignore custom element */}
+          <vaul-content
             data-testid="content"
-            className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
+            class="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
           >
-            <Drawer.Handle data-testid="handle" className="mb-8 mt-2" />
+            {/* @ts-ignore custom element */}
+            <vaul-handle data-testid="handle" class="mb-8 mt-2" />
             <div
               className={clsx('flex flex-col max-w-md mx-auto w-full p-4 pt-5', {
                 'overflow-y-auto': snap === 1,
                 'overflow-hidden': snap !== 1,
               })}
             >
-              <div className="flex items-center">
-                <svg
-                  className="text-yellow-400 h-5 w-5 flex-shrink-0"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z"
-                    clip-rule="evenodd"
-                  ></path>
-                </svg>
-                <svg
-                  className="text-yellow-400 h-5 w-5 flex-shrink-0"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z"
-                    clip-rule="evenodd"
-                  ></path>
-                </svg>
-                <svg
-                  className="text-yellow-400 h-5 w-5 flex-shrink-0"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z"
-                    clip-rule="evenodd"
-                  ></path>
-                </svg>
-                <svg
-                  className="text-yellow-400 h-5 w-5 flex-shrink-0"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z"
-                    clip-rule="evenodd"
-                  ></path>
-                </svg>
-                <svg
-                  className="text-gray-300 h-5 w-5 flex-shrink-0"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z"
-                    clip-rule="evenodd"
-                  ></path>
-                </svg>
-              </div>{' '}
               <h1 className="text-2xl mt-2 font-medium">The Hidden Details</h1>
               <p className="text-sm mt-1 text-gray-600 mb-6">2 modules, 27 hours of video</p>
               <p className="text-gray-600">
@@ -122,8 +80,8 @@ export default function Page() {
               <div className="mt-12">
                 <figure>
                   <blockquote className="font-serif">
-                    “I especially loved the hidden details video. That was so useful, learned a lot by just reading it.
-                    Can&rsquo;t wait for more course content!”
+                    &ldquo;I especially loved the hidden details video. That was so useful, learned a lot by just
+                    reading it. Can&rsquo;t wait for more course content!&rdquo;
                   </blockquote>
                   <figcaption>
                     <span className="text-sm text-gray-600 mt-2 block">Yvonne Ray, Frontend Developer</span>
@@ -148,9 +106,12 @@ export default function Page() {
                 </div>
               </div>
             </div>
-          </Drawer.Content>
-        </Drawer.Portal>
-      </Drawer.Root>
+          {/* @ts-ignore custom element */}
+          </vaul-content>
+        {/* @ts-ignore custom element */}
+        </vaul-portal>
+      {/* @ts-ignore custom element */}
+      </vaul-root>
     </div>
   );
 }

@@ -1,17 +1,24 @@
 'use client';
 
-import { Drawer } from 'vaul';
+import 'vaul';
+import '../../vaul.d';
 
 export default function Page() {
   return (
     <div className="w-screen h-screen bg-white p-8 flex justify-center items-center" data-vaul-drawer-wrapper="">
-      <Drawer.Root>
-        <Drawer.Trigger asChild>
+      {/* @ts-ignore custom element */}
+      <vaul-root>
+        {/* @ts-ignore custom element */}
+        <vaul-trigger>
           <button>Open Drawer</button>
-        </Drawer.Trigger>
-        <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-          <Drawer.Content className="bg-white flex flex-col fixed bottom-0 left-0 right-0 max-h-[82vh] rounded-t-[10px]">
+        {/* @ts-ignore custom element */}
+        </vaul-trigger>
+        {/* @ts-ignore custom element */}
+        <vaul-portal>
+          {/* @ts-ignore custom element */}
+          <vaul-overlay class="fixed inset-0 bg-black/40" />
+          {/* @ts-ignore custom element */}
+          <vaul-content class="bg-white flex flex-col fixed bottom-0 left-0 right-0 max-h-[82vh] rounded-t-[10px]">
             <div className="max-w-md w-full mx-auto overflow-auto p-4 rounded-t-[10px]">
               <input className="border border-gray-400 my-8" placeholder="Input" />
               <p>
@@ -41,9 +48,12 @@ export default function Page() {
               </p>
               <input className="border border-gray-400 my-8" placeholder="Input" />
             </div>
-          </Drawer.Content>
-        </Drawer.Portal>
-      </Drawer.Root>
+          {/* @ts-ignore custom element */}
+          </vaul-content>
+        {/* @ts-ignore custom element */}
+        </vaul-portal>
+      {/* @ts-ignore custom element */}
+      </vaul-root>
     </div>
   );
 }
