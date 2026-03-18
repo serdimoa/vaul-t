@@ -1,35 +1,56 @@
 'use client';
 
-import { Drawer } from 'vaul';
-import { useState } from 'react';
+import 'vaul';
+import { useEffect, useRef, useState } from 'react';
+import '../../vaul.d';
 
-export function MyDrawer({
+function MyDrawer({
   open,
-  setOpen,
-  setOpen2,
+  onOpen,
+  onClose,
+  onOpenSecond,
 }: {
   open: boolean;
-  setOpen: (open: boolean) => void;
-  setOpen2: (open: boolean) => void;
+  onOpen: () => void;
+  onClose: () => void;
+  onOpenSecond: () => void;
 }) {
+  const rootRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const root = rootRef.current as any;
+    if (!root) return;
+    if (open) {
+      root.openDrawer();
+    } else {
+      root.closeDrawer();
+    }
+  }, [open]);
+
   return (
-    <Drawer.Root open={open}>
-      <Drawer.Trigger asChild onClick={() => setOpen(true)}>
-        <button>Open Drawer</button>
-      </Drawer.Trigger>
-      <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-        <Drawer.Content className="bg-zinc-100 flex flex-col rounded-t-[10px] mt-24 fixed bottom-0 left-0 right-0">
+    // @ts-ignore custom element
+    <vaul-root ref={rootRef}>
+      {/* @ts-ignore custom element */}
+      <vaul-trigger>
+        <button onClick={onOpen}>Open Drawer</button>
+      {/* @ts-ignore custom element */}
+      </vaul-trigger>
+      {/* @ts-ignore custom element */}
+      <vaul-portal>
+        {/* @ts-ignore custom element */}
+        <vaul-overlay class="fixed inset-0 bg-black/40" />
+        {/* @ts-ignore custom element */}
+        <vaul-content class="bg-zinc-100 flex flex-col rounded-t-[10px] mt-24 fixed bottom-0 left-0 right-0">
           <div className="p-4 bg-white rounded-t-[10px] flex-1">
             <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
             <div className="max-w-md mx-auto">
-              <Drawer.Title className="font-medium mb-4">Unstyled drawer for React.</Drawer.Title>
+              <p className="font-medium mb-4">Unstyled drawer for React.</p>
 
               <button
                 type="button"
                 onClick={() => {
-                  setOpen2(true);
-                  setOpen(false);
+                  onOpenSecond();
+                  onClose();
                 }}
                 className="rounded-md mb-6 w-full bg-gray-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
               >
@@ -49,9 +70,9 @@ export function MyDrawer({
                   fill="none"
                   height="16"
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   width="16"
                   aria-hidden="true"
@@ -72,9 +93,9 @@ export function MyDrawer({
                   fill="none"
                   height="16"
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   width="16"
                   aria-hidden="true"
@@ -87,22 +108,41 @@ export function MyDrawer({
               </a>
             </div>
           </div>
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+        {/* @ts-ignore custom element */}
+        </vaul-content>
+      {/* @ts-ignore custom element */}
+      </vaul-portal>
+    {/* @ts-ignore custom element */}
+    </vaul-root>
   );
 }
 
-export function MyDrawer2({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
+function MyDrawer2({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const rootRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const root = rootRef.current as any;
+    if (!root) return;
+    if (open) {
+      root.openDrawer();
+    } else {
+      root.closeDrawer();
+    }
+  }, [open]);
+
   return (
-    <Drawer.Root open={open}>
-      <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-        <Drawer.Content className="bg-zinc-100 flex flex-col rounded-t-[10px] mt-24 fixed bottom-0 left-0 right-0">
+    // @ts-ignore custom element
+    <vaul-root ref={rootRef}>
+      {/* @ts-ignore custom element */}
+      <vaul-portal>
+        {/* @ts-ignore custom element */}
+        <vaul-overlay class="fixed inset-0 bg-black/40" />
+        {/* @ts-ignore custom element */}
+        <vaul-content class="bg-zinc-100 flex flex-col rounded-t-[10px] mt-24 fixed bottom-0 left-0 right-0">
           <div className="p-4 bg-white rounded-t-[10px] flex-1">
             <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
             <div className="max-w-md mx-auto">
-              <Drawer.Title className="font-medium mb-4">Unstyled drawer for React.</Drawer.Title>
+              <p className="font-medium mb-4">Unstyled drawer for React.</p>
               <p className="text-zinc-600 mb-2">
                 This component can be used as a replacement for a Dialog on mobile and tablet devices.
               </p>
@@ -127,9 +167,7 @@ export function MyDrawer2({ open, setOpen }: { open: boolean; setOpen: (open: bo
 
               <button
                 type="button"
-                onClick={() => {
-                  setOpen(false);
-                }}
+                onClick={onClose}
                 className="rounded-md mb-6 w-full bg-gray-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
               >
                 Close this
@@ -148,9 +186,9 @@ export function MyDrawer2({ open, setOpen }: { open: boolean; setOpen: (open: bo
                   fill="none"
                   height="16"
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   width="16"
                   aria-hidden="true"
@@ -171,9 +209,9 @@ export function MyDrawer2({ open, setOpen }: { open: boolean; setOpen: (open: bo
                   fill="none"
                   height="16"
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   width="16"
                   aria-hidden="true"
@@ -186,9 +224,12 @@ export function MyDrawer2({ open, setOpen }: { open: boolean; setOpen: (open: bo
               </a>
             </div>
           </div>
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+        {/* @ts-ignore custom element */}
+        </vaul-content>
+      {/* @ts-ignore custom element */}
+      </vaul-portal>
+    {/* @ts-ignore custom element */}
+    </vaul-root>
   );
 }
 
@@ -199,8 +240,13 @@ export default function Home() {
   return (
     <div className="bg-zinc-100 space-y-10">
       <p className="pb-[120vh] bg-zinc-600 text-white font-bold">scroll down</p>
-      <MyDrawer open={open} setOpen={setOpen} setOpen2={setOpen2} />
-      <MyDrawer2 open={open2} setOpen={setOpen2} />
+      <MyDrawer
+        open={open}
+        onOpen={() => setOpen(true)}
+        onClose={() => setOpen(false)}
+        onOpenSecond={() => setOpen2(true)}
+      />
+      <MyDrawer2 open={open2} onClose={() => setOpen2(false)} />
       <p className="py-32 bg-zinc-800">scroll down</p>
     </div>
   );

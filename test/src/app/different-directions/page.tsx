@@ -1,41 +1,54 @@
 'use client';
 
+import 'vaul';
 import clsx from 'clsx';
-import { Drawer, DialogProps } from 'vaul';
+import '../../vaul.d';
+
+type DrawerDirection = 'top' | 'bottom' | 'left' | 'right';
 
 function DirectionalDrawer({
   direction,
   children,
 }: {
-  direction: DialogProps['direction'];
+  direction: DrawerDirection;
   children: React.ReactNode;
 }) {
   return (
-    <Drawer.Root direction={direction}>
-      <Drawer.Trigger asChild>
+    // @ts-ignore custom element
+    <vaul-root direction={direction}>
+      {/* @ts-ignore custom element */}
+      <vaul-trigger>
         <button data-testid="trigger" className="text-2xl">
           {children}
         </button>
-      </Drawer.Trigger>
-      <Drawer.Portal>
-        <Drawer.Overlay data-testid="overlay" className="fixed inset-0 bg-black/40" />
-        <Drawer.Content
+      {/* @ts-ignore custom element */}
+      </vaul-trigger>
+      {/* @ts-ignore custom element */}
+      <vaul-portal>
+        {/* @ts-ignore custom element */}
+        <vaul-overlay data-testid="overlay" class="fixed inset-0 bg-black/40" />
+        {/* @ts-ignore custom element */}
+        <vaul-content
           data-testid="content"
-          className={clsx('bg-zinc-100 flex flex-col rounded-t-[10px] fixed ', {
+          class={clsx('bg-zinc-100 flex flex-col rounded-t-[10px] fixed ', {
             'bottom-0 mt-24 left-0 right-0 h-[96%]': direction === 'bottom',
             'top-0 mb-24 left-0 right-0 h-[96%]': direction === 'top',
             'left-0 top-0 bottom-0 w-[300px] h-full': direction === 'left',
             'right-0 top-0 bottom-0 w-[300px] h-full': direction === 'right',
           })}
         >
-          <Drawer.Close data-testid="drawer-close">Close</Drawer.Close>
+          {/* @ts-ignore custom element */}
+          <vaul-close>
+            <button data-testid="drawer-close">Close</button>
+          {/* @ts-ignore custom element */}
+          </vaul-close>
           <button data-testid="controlled-close" className="text-2xl">
             Close
           </button>
           <div className="p-4 bg-white rounded-t-[10px] flex-1">
             <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
             <div className="max-w-md mx-auto">
-              <Drawer.Title className="font-medium mb-4">Unstyled drawer for React.</Drawer.Title>
+              <p className="font-medium mb-4">Unstyled drawer for React.</p>
               <p className="text-zinc-600 mb-2">
                 This component can be used as a replacement for a Dialog on mobile and tablet devices.
               </p>
@@ -109,9 +122,12 @@ function DirectionalDrawer({
               </a>
             </div>
           </div>
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+        {/* @ts-ignore custom element */}
+        </vaul-content>
+      {/* @ts-ignore custom element */}
+      </vaul-portal>
+    {/* @ts-ignore custom element */}
+    </vaul-root>
   );
 }
 
