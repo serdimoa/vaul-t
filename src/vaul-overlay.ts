@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { ReactiveElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { findRoot } from './lit-registry';
 import type { VaulRoot } from './vaul-root';
@@ -9,14 +9,12 @@ import type { VaulRoot } from './vaul-root';
  * Place it inside `<vaul-portal>` (or directly in `<vaul-root>` if you are
  * not using a portal).  It automatically picks up `data-vaul-*` attributes
  * from the root controller.
+ *
+ * No shadow DOM is used – the element is a plain real-DOM element.
  */
 @customElement('vaul-overlay')
-export class VaulOverlay extends LitElement {
+export class VaulOverlay extends ReactiveElement {
   private _root: VaulRoot | null = null;
-
-  protected createRenderRoot() {
-    return this;
-  }
 
   connectedCallback() {
     super.connectedCallback();
@@ -36,27 +34,18 @@ export class VaulOverlay extends LitElement {
   }
 
   private _onPointerUp = (e: PointerEvent) => {
-    if (this._root) {
-      this._root.onRelease(e);
-    }
+    this._root?.onRelease(e);
   };
 
   /** Clicking the overlay (without dragging) dismisses the drawer. */
   private _onClick = (_e: MouseEvent) => {
     const root = this._root;
     if (!root) return;
-    if (root.dismissible && root.isOpen) {
+    // When modal=false the overlay is hidden, but guard anyway.
+    if (root.modal && root.dismissible && root.isOpen) {
       root.closeDrawer();
     }
   };
-
-  render() {
-    const root = this._root;
-    if (root && !root.modal) {
-      return html``;
-    }
-    return html`<slot></slot>`;
-  }
 }
 
 declare global {

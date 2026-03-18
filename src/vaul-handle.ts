@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { ReactiveElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { findRoot } from './lit-registry';
 import type { VaulRoot } from './vaul-root';
@@ -12,24 +12,84 @@ const DOUBLE_TAP_TIMEOUT = 120;
  *
  * When `handleOnly` is set on `<vaul-root>` this element is the only
  * interaction surface that initiates drag.
+ *
+ * Uses plain real DOM – no shadow DOM, no slots.
  */
 @customElement('vaul-handle')
-export class VaulHandle extends LitElement {
+export class VaulHandle extends ReactiveElement {
   /** When true, tapping the handle does not cycle through snap points. */
   @property({ attribute: 'prevent-cycle', type: Boolean }) preventCycle = false;
 
   private _root: VaulRoot | null = null;
   private _closeTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private _shouldCancelInteraction = false;
-
-  protected createRenderRoot() {
-    return this;
-  }
+  /** The inner div that carries `data-vaul-handle`. */
+  private _handleDiv: HTMLDivElement | null = null;
 
   connectedCallback() {
     super.connectedCallback();
     this._root = findRoot(this) as VaulRoot | null;
+    this._buildDOM();
+
+    // Keep data-vaul-drawer-visible in sync with the open state.
+    this.addEventListener('vaul-open-change', this._syncVisible as EventListener, true);
+    const rootEl = this._root as unknown as EventTarget | null;
+    rootEl?.addEventListener('vaul-open-change', this._syncVisible as EventListener);
   }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    const rootEl = this._root as unknown as EventTarget | null;
+    rootEl?.removeEventListener('vaul-open-change', this._syncVisible as EventListener);
+  }
+
+  private _syncVisible = () => {
+    if (!this._handleDiv) return;
+    const isOpen = this._root?.isOpen ?? false;
+    this._handleDiv.setAttribute('data-vaul-drawer-visible', isOpen ? 'true' : 'false');
+  };
+
+  private _buildDOM() {
+    // Move existing children into the hitarea span so user-defined content is preserved.
+    const existingChildren = Array.from(this.childNodes);
+
+    const div = document.createElement('div');
+    div.setAttribute('data-vaul-handle', '');
+    div.setAttribute('data-vaul-drawer-visible', (this._root?.isOpen ?? false) ? 'true' : 'false');
+    div.setAttribute('aria-hidden', 'true');
+
+    div.addEventListener('click', this._onHandleClick);
+    div.addEventListener('pointercancel', this._onPointerCancel);
+    div.addEventListener('pointerdown', this._onPointerDown);
+    div.addEventListener('pointermove', this._onPointerMove);
+
+    const span = document.createElement('span');
+    span.setAttribute('data-vaul-handle-hitarea', '');
+    span.setAttribute('aria-hidden', 'true');
+
+    // Preserve any children the caller put inside <vaul-handle>.
+    existingChildren.forEach((child) => span.appendChild(child));
+
+    div.appendChild(span);
+    this.appendChild(div);
+    this._handleDiv = div;
+  }
+
+  // ─── Cycle snap points on tap ─────────────────────────────────────────────
+
+  private _onHandleClick = () => this._handleStartCycle();
+  private _onPointerCancel = () => this._handleCancelInteraction();
+
+  private _onPointerDown = (e: PointerEvent) => {
+    const r = this._root;
+    if (r?.handleOnly) r.onPress(e);
+    this._handleStartInteraction();
+  };
+
+  private _onPointerMove = (e: PointerEvent) => {
+    const r = this._root;
+    if (r?.handleOnly) r.onDrag(e);
+  };
 
   private _handleStartCycle() {
     if (this._shouldCancelInteraction) {
@@ -49,7 +109,7 @@ export class VaulHandle extends LitElement {
     }
     this._handleCancelInteraction();
 
-    const snapPoints = root._snapPoints;
+    const snapPoints = root.snapPoints;
     if (!snapPoints || snapPoints.length === 0) {
       if (!root.dismissible) root.closeDrawer();
       return;
@@ -80,32 +140,6 @@ export class VaulHandle extends LitElement {
   private _handleCancelInteraction() {
     if (this._closeTimeoutId) clearTimeout(this._closeTimeoutId);
     this._shouldCancelInteraction = false;
-  }
-
-  render() {
-    const root = this._root;
-    const isOpen = root?.isOpen ?? false;
-
-    return html`
-      <div
-        data-vaul-handle=""
-        data-vaul-drawer-visible=${isOpen ? 'true' : 'false'}
-        aria-hidden="true"
-        @click=${this._handleStartCycle}
-        @pointercancel=${this._handleCancelInteraction}
-        @pointerdown=${(e: PointerEvent) => {
-          const r = this._root;
-          if (r?.handleOnly) r.onPress(e);
-          this._handleStartInteraction();
-        }}
-        @pointermove=${(e: PointerEvent) => {
-          const r = this._root;
-          if (r?.handleOnly) r.onDrag(e);
-        }}
-      >
-        <span data-vaul-handle-hitarea="" aria-hidden="true"><slot></slot></span>
-      </div>
-    `;
   }
 }
 

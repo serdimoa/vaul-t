@@ -1,4 +1,4 @@
-import { LitElement } from 'lit';
+import { ReactiveElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { VaulRoot } from './vaul-root';
 import { findRoot } from './lit-registry';
@@ -12,17 +12,12 @@ import { findRoot } from './lit-registry';
  * the global registry can locate the parent `<vaul-root>` after the move.
  */
 @customElement('vaul-portal')
-export class VaulPortal extends LitElement {
+export class VaulPortal extends ReactiveElement {
   /** Custom container element.  Defaults to `document.body`. */
   @property({ attribute: false }) container: HTMLElement | null = null;
 
   private _root: VaulRoot | null = null;
   private _teleportedNodes: Node[] = [];
-
-  // VaulPortal intentionally renders nothing itself – all children are moved.
-  protected createRenderRoot() {
-    return this;
-  }
 
   connectedCallback() {
     super.connectedCallback();

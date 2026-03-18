@@ -1,4 +1,4 @@
-import { LitElement, html, nothing } from 'lit';
+import { ReactiveElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { DrawerDirection } from './types';
 import {
@@ -38,7 +38,7 @@ let uidCounter = 0;
  * global registry (for portalled elements stamped with `data-vaul-root-id`).
  */
 @customElement('vaul-root')
-export class VaulRoot extends LitElement {
+export class VaulRoot extends ReactiveElement {
   // ─── Public attributes / properties ────────────────────────────────────────
 
   /** Whether the drawer is open (controlled mode). */
@@ -170,15 +170,6 @@ export class VaulRoot extends LitElement {
     if (this._nestedOpenChangeTimer) clearTimeout(this._nestedOpenChangeTimer);
     this._scaleBackgroundCleanup?.();
     this._restoreScroll?.();
-  }
-
-  /** LitElement uses light DOM so existing CSS selectors work unchanged. */
-  protected createRenderRoot() {
-    return this;
-  }
-
-  render() {
-    return html`<slot></slot>`;
   }
 
   // ─── Property change handling ─────────────────────────────────────────────

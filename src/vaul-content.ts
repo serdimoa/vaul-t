@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { ReactiveElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { findRoot } from './lit-registry';
 import type { VaulRoot } from './vaul-root';
@@ -18,7 +18,7 @@ type PointerPosition = { x: number; y: number };
  * pointer events so the root can run the drag logic.
  */
 @customElement('vaul-content')
-export class VaulContent extends LitElement {
+export class VaulContent extends ReactiveElement {
   @property({ type: Boolean, attribute: 'handle-only' }) handleOnly = false;
 
   private _root: VaulRoot | null = null;
@@ -26,10 +26,6 @@ export class VaulContent extends LitElement {
   private _lastKnownPointerEvent: PointerEvent | null = null;
   private _wasBeyondThePoint = false;
   private _cleanupViewport: (() => void) | null = null;
-
-  protected createRenderRoot() {
-    return this;
-  }
 
   connectedCallback() {
     super.connectedCallback();
@@ -168,9 +164,6 @@ export class VaulContent extends LitElement {
     }
   }
 
-  render() {
-    return html`<slot></slot>`;
-  }
 }
 
 declare global {

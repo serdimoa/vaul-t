@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { ReactiveElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { findRoot } from './lit-registry';
 import type { VaulRoot } from './vaul-root';
@@ -11,12 +11,8 @@ import type { VaulRoot } from './vaul-root';
  * ```
  */
 @customElement('vaul-close')
-export class VaulClose extends LitElement {
+export class VaulClose extends ReactiveElement {
   private _root: VaulRoot | null = null;
-
-  protected createRenderRoot() {
-    return this;
-  }
 
   connectedCallback() {
     super.connectedCallback();
@@ -33,10 +29,6 @@ export class VaulClose extends LitElement {
     e.stopPropagation();
     this._root?.closeDrawer();
   };
-
-  render() {
-    return html`<slot></slot>`;
-  }
 }
 
 declare global {

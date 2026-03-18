@@ -111,5 +111,4 @@ declare namespace JSX {
   }
 }
 
-import React from 'react';
 export {};
